@@ -1,0 +1,48 @@
+---
+repository_url: https://github.com/shahanth4444/payment-gateway-async-pro
+author: Shahanth
+description: Production-ready payment gateway with async processing, webhooks, and embeddable SDK
+
+setup:
+  - name: Install backend dependencies
+    command: cd backend && npm install
+  - name: Install dashboard dependencies
+    command: cd dashboard && npm install
+  - name: Install checkout dependencies
+    command: cd checkout && npm install
+  - name: Install SDK dependencies
+    command: cd checkout-widget && npm install
+  - name: Build SDK
+    command: cd checkout-widget && npm run build
+
+start:
+  - name: Start all services
+    command: docker-compose up -d
+    wait_for_health: true
+    timeout: 120
+
+test:
+  - name: Check API health
+    command: curl -f http://localhost:8000/health
+  - name: Check job queue status
+    command: curl -f http://localhost:8000/api/v1/test/jobs/status
+
+verify:
+  - name: Verify PostgreSQL is running
+    command: docker ps | grep postgres_gateway
+  - name: Verify Redis is running
+    command: docker ps | grep redis_gateway
+  - name: Verify API is running
+    command: docker ps | grep gateway_api
+  - name: Verify Worker is running
+    command: docker ps | grep gateway_worker
+  - name: Verify Dashboard is accessible
+    command: curl -f http://localhost:3000
+  - name: Verify Checkout is accessible
+    command: curl -f http://localhost:3001
+
+shutdown:
+  - name: Stop all services
+    command: docker-compose down
+  - name: Clean up volumes
+    command: docker-compose down -v
