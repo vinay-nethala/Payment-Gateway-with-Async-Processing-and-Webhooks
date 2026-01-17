@@ -1,0 +1,25 @@
+{
+    "name": "payment-gateway-sdk",
+    "version": "1.0.0",
+    "description": "Embeddable JavaScript SDK for Payment Gateway",
+    "main": "dist/checkout.js",
+    "scripts": {
+        "build": "webpack --config webpack.config.js",
+        "watch": "webpack --watch --config webpack.config.js"
+    },
+    "keywords": [
+        "payment",
+        "gateway",
+        "sdk",
+        "checkout"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "@babel/core": "^7.23.0",
+        "@babel/preset-env": "^7.23.0",
+        "babel-loader": "^9.1.3",
+        "webpack": "^5.89.0",
+        "webpack-cli": "^5.1.4"
+    }
+}
