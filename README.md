@@ -64,6 +64,8 @@ graph TB
 
 🔄 Webhook Delivery & Retry Mechanism
 Mermaid
+```
+
 stateDiagram-v2
     [*] --> Pending: Webhook Created
     Pending --> Attempt1: Immediate
@@ -80,11 +82,15 @@ stateDiagram-v2
     Success --> [*]
     Failed --> [*]
 ---
+```
+
 
 
 
 📚 Database Schema
 Mermaid
+```
+
 erDiagram
     MERCHANTS ||--o{ ORDERS : creates
     MERCHANTS ||--o{ PAYMENTS : processes
@@ -158,6 +164,8 @@ erDiagram
         timestamp created_at
         timestamp expires_at
     }
+```
+
 ---
 
 ⚙️ SDK Integration Flow
