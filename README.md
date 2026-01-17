@@ -280,10 +280,10 @@ curl http://localhost:8000/api/v1/webhooks?limit=5 \
 ```
 
 ## 🔄 Webhook Setup & Monitoring
-Use webhook URL like http://host.docker.internal:4000/webhook in Docker environments
-Webhooks are signed with HMAC-SHA256 using merchant’s webhook secret
-Retry strategy with exponential backoff: 1 min → 5 min → 30 min → 2 hrs
-Dashboard UI for manual retry and detailed webhook event logs
+Use webhook URL like http://host.docker.internal:4000/webhook in Docker environments.
+Webhooks are signed with HMAC-SHA256 using merchant’s webhook secret.
+Retry strategy with exponential backoff: 1 min → 5 min → 30 min → 2 hrs.
+Dashboard UI for manual retry and detailed webhook event logs.
 
 ## 🛠️ Operational & Scaling Notes
 Workers process jobs asynchronously (payments, webhooks, refunds)
@@ -296,7 +296,6 @@ API requests authenticated with API key + secret headers
 Webhook payloads verified with HMAC-SHA256 signatures
 SQL queries use parameterized statements to prevent injection
 Input validation ensures data integrity on all endpoints
----
 
 🗂️ Project Structure
 ```
