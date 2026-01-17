@@ -63,7 +63,7 @@ graph TB
 
 🔄 Webhook Delivery & Retry Mechanism
 ```
-
+```
 stateDiagram-v2
     [*] --> Pending: Webhook Created
     Pending --> Attempt1: Immediate
@@ -167,6 +167,8 @@ erDiagram
 ---
 
 ⚙️ SDK Integration Flow
+```
+
 Mermaid
 sequenceDiagram
     participant Merchant
@@ -199,6 +201,8 @@ sequenceDiagram
         SDK->>Merchant: onFailure callback
     end
 ---
+```
+
 
 ⚡ Quick Start
 Prerequisites
