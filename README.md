@@ -17,6 +17,8 @@ An industrial-grade, production-ready payment gateway with asynchronous payment 
 ---
 
 ## 🏗️ System Architecture
+```
+
 
 graph TB
     subgraph External Systems
@@ -61,9 +63,10 @@ graph TB
     WEBHOOK_PROC -->|Send Webhook POST with HMAC| WEBHOOK_ENDPOINT
 ```
 
+
 🔄 Webhook Delivery & Retry Mechanism
 ```
-```
+
 stateDiagram-v2
     [*] --> Pending: Webhook Created
     Pending --> Attempt1: Immediate
@@ -205,7 +208,7 @@ sequenceDiagram
 
 
 ⚡ Quick Start
-Prerequisites
+## Prerequisites
 Docker Desktop installed and running
 Node.js 18+ (optional for local development)
 Git
@@ -238,12 +241,11 @@ http://localhost:3000
 Merchant Dashboard UI
 Checkout
 http://localhost:3001
-Payment Checkout Page
-SDK
+
 http://localhost:3001/checkout.js
 ```
 
-E
+
 Create Order
 ```Bash
 curl -X POST http://localhost:8000/api/v1/orders \
@@ -277,21 +279,19 @@ curl http://localhost:8000/api/v1/webhooks?limit=5 \
 -H "X-Api-Secret: secret_test_xyz789"
 ```
 
-🔄 Webhook Setup & Monitoring
+## 🔄 Webhook Setup & Monitoring
 Use webhook URL like http://host.docker.internal:4000/webhook in Docker environments
 Webhooks are signed with HMAC-SHA256 using merchant’s webhook secret
 Retry strategy with exponential backoff: 1 min → 5 min → 30 min → 2 hrs
 Dashboard UI for manual retry and detailed webhook event logs
----
 
-🛠️ Operational & Scaling Notes
+## 🛠️ Operational & Scaling Notes
 Workers process jobs asynchronously (payments, webhooks, refunds)
 Logs available via docker-compose logs -f worker for troubleshooting
 Scale horizontally by increasing worker container replicas
 Use PostgreSQL & Redis connection pooling for performance
----
 
-🔒 Security Best Practices
+### 🔒 Security Best Practices
 API requests authenticated with API key + secret headers
 Webhook payloads verified with HMAC-SHA256 signatures
 SQL queries use parameterized statements to prevent injection
