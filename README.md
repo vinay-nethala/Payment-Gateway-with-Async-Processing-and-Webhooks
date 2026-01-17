@@ -18,7 +18,6 @@ An industrial-grade, production-ready payment gateway with asynchronous payment 
 
 ## 🏗️ System Architecture
 
-```mermaid
 graph TB
     subgraph External Systems
         MERCHANT[Merchant Website]
@@ -63,7 +62,6 @@ graph TB
 ```
 
 🔄 Webhook Delivery & Retry Mechanism
-Mermaid
 ```
 
 stateDiagram-v2
@@ -220,35 +218,28 @@ Service
 URL
 Description
 API
+```
+
 http://localhost:8000
 REST API Server
+```
+```
 Dashboard
 http://localhost:3000
+```
+```
+
+
+
 Merchant Dashboard UI
 Checkout
 http://localhost:3001
 Payment Checkout Page
 SDK
 http://localhost:3001/checkout.js
-Embeddable JS SDK (3.77 KB)
-🔐 Environment Variables Example
-Create .env file or export variables:
-Copy code
-Env
-PORT=8000
-NODE_ENV=development
-DATABASE_URL=postgres://user:pass@postgres:5432/gateway
-REDIS_URL=redis://redis:6379
-JWT_SECRET=your_jwt_secret
-API_SECRET_SALT=your_api_salt
+```
 
-TEST_MODE=true
-TEST_PROCESSING_DELAY=1000
-TEST_PAYMENT_SUCCESS=true
-WEBHOOK_RETRY_INTERVALS_TEST=true
-💻 API Usage Examples
----
-
+E
 Create Order
 ```Bash
 curl -X POST http://localhost:8000/api/v1/orders \
@@ -304,6 +295,8 @@ Input validation ensures data integrity on all endpoints
 ---
 
 🗂️ Project Structure
+```
+
 
 
 payment-gateway-async-pro/
@@ -325,6 +318,8 @@ payment-gateway-async-pro/
 ├── checkout-widget/          # Embeddable JavaScript SDK
 ├── docker-compose.yml
 └── README.md
+````
+
 👨‍💻 Author & License
 Made for demonstration and learning purposes.
 Licensed under MIT License.
