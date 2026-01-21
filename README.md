@@ -1,7 +1,7 @@
 # ⚡ Async Payment Gateway – Production-Ready System
 
-> A real-world **asynchronous payment gateway** built using modern backend architecture  
-> Designed to demonstrate scalability, reliability, and secure payment workflows
+ A real-world **asynchronous payment gateway** built using modern backend architecture  
+ Designed to demonstrate scalability, reliability, and secure payment workflows
 
 **Tech Stack:** Node.js, Express, Bull (Redis), PostgreSQL, React, Docker
 
