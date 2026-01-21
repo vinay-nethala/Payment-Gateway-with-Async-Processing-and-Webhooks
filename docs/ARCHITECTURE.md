@@ -1,300 +1,195 @@
-# Payment Gateway Architecture
+# 🏗️ System Architecture
 
-## System Overview
+This document explains the **overall architecture** of the Async Payment Gateway system.  
+The design follows **real-world payment gateway patterns** used in production systems.
 
-The payment gateway is built on a microservices architecture with async job processing, enabling scalability and reliability for production workloads.
+---
 
-## Architecture Diagram
+## 📌 Architecture Goals
+
+- Non-blocking payment processing
+- High scalability using background workers
+- Reliable webhook delivery
+- Clear separation of responsibilities
+- Easy monitoring and maintenance
+
+---
+
+## 🧱 High-Level Architecture Diagram
 
 ```mermaid
-graph TB
-    subgraph "External Systems"
-        MERCHANT[Merchant Website]
-        WEBHOOK_ENDPOINT[Merchant Webhook Endpoint]
-    end
-    
-    subgraph "Frontend Layer"
-        SDK[Embeddable SDK]
-        DASHBOARD[Dashboard :3000]
-        CHECKOUT[Checkout Page :3001]
-    end
-    
-    subgraph "API Layer"
-        API[API Server :8000]
-    end
-    
-    subgraph "Worker Layer"
-        WORKER[Worker Service]
-        PAYMENT_JOB[Payment Processor]
-        WEBHOOK_JOB[Webhook Deliverer]
-        REFUND_JOB[Refund Processor]
-    end
-    
-    subgraph "Data Layer"
-        POSTGRES[(PostgreSQL)]
-        REDIS[(Redis)]
-    end
-    
-    MERCHANT -->|Integrate| SDK
-    SDK -->|Open Modal| CHECKOUT
-    MERCHANT -->|API Calls| API
-    DASHBOARD -->|Configure| API
-    CHECKOUT -->|Create Payment| API
-    
-    API -->|Enqueue| REDIS
-    WORKER -->|Consume| REDIS
-    WORKER --> PAYMENT_JOB
-    WORKER --> WEBHOOK_JOB
-    WORKER --> REFUND_JOB
-    
-    API <-->|Read/Write| POSTGRES
-    WORKER <-->|Read/Write| POSTGRES
-    
-    WEBHOOK_JOB -->|HTTP POST| WEBHOOK_ENDPOINT
+graph TD
+    M[Merchant Website / App]
+    SDK[Checkout SDK]
+    UI[Checkout UI]
+    API[API Server<br/>Node.js + Express]
+    REDIS[(Redis Queue)]
+    WORKER[Worker Service<br/>Bull Jobs]
+    DB[(PostgreSQL)]
+    WH[Merchant Webhook Endpoint]
+
+    M -->|Integrates| SDK
+    SDK -->|Opens| UI
+    UI -->|Create Payment| API
+    M -->|Create Order| API
+
+    API -->|Store Data| DB
+    API -->|Enqueue Jobs| REDIS
+
+    WORKER -->|Consume Jobs| REDIS
+    WORKER -->|Update Status| DB
+    WORKER -->|Send Events| WH
+```
+## 🔄 Payment Processing Flow
 ```
 
-## Async Processing Flow
-
-```mermaid
 sequenceDiagram
-    participant M as Merchant
-    participant A as API
-    participant R as Redis Queue
-    participant W as Worker
-    participant DB as Database
-    participant WH as Webhook Endpoint
-    
-    M->>A: POST /payments
-    A->>DB: Insert payment (status: pending)
-    A->>R: Enqueue ProcessPaymentJob
-    A-->>M: 201 Created (status: pending)
-    
-    W->>R: Consume job
-    W->>W: Process payment (5-10s)
-    W->>DB: Update status (success/failed)
-    W->>R: Enqueue DeliverWebhookJob
-    
-    W->>R: Consume webhook job
-    W->>W: Generate HMAC signature
-    W->>WH: POST webhook with signature
-    WH-->>W: 200 OK
-    W->>DB: Update webhook log (success)
+    participant Merchant
+    participant API
+    participant Redis
+    participant Worker
+    participant DB
+    participant Webhook
+
+    Merchant->>API: Create Payment
+    API->>DB: Save payment (pending)
+    API->>Redis: Add payment job
+    API-->>Merchant: Response (pending)
+
+    Worker->>Redis: Fetch job
+    Worker->>DB: Get payment details
+    Worker->>Worker: Process payment
+
+    alt Success
+        Worker->>DB: Update status (success)
+        Worker->>Redis: Queue webhook job
+    else Failure
+        Worker->>DB: Update status (failed)
+        Worker->>Redis: Queue webhook job
+    end
+
+    Worker->>Webhook: Send webhook event
 ```
+## Webhook Delivery Architecture
+```
+ stateDiagram-v2
+    [*] --> Pending
+    Pending --> Attempt1
+    Attempt1 --> Success
+    Attempt1 --> Retry2
 
-## Webhook Retry Mechanism
+    Retry2 --> Success
+    Retry2 --> Retry3
 
-```mermaid
-stateDiagram-v2
-    [*] --> Pending: Webhook Created
-    Pending --> Attempt1: Immediate
-    Attempt1 --> Success: HTTP 200-299
-    Attempt1 --> Attempt2: Failed (wait 1m)
-    Attempt2 --> Success: HTTP 200-299
-    Attempt2 --> Attempt3: Failed (wait 5m)
-    Attempt3 --> Success: HTTP 200-299
-    Attempt3 --> Attempt4: Failed (wait 30m)
-    Attempt4 --> Success: HTTP 200-299
-    Attempt4 --> Attempt5: Failed (wait 2h)
-    Attempt5 --> Success: HTTP 200-299
-    Attempt5 --> Failed: Max Retries
+    Retry3 --> Success
+    Retry3 --> Retry4
+
+    Retry4 --> Success
+    Retry4 --> Retry5
+
+    Retry5 --> Success
+    Retry5 --> Failed
+
     Success --> [*]
     Failed --> [*]
 ```
-
-## Database Schema
-
-```mermaid
-erDiagram
-    MERCHANTS ||--o{ ORDERS : creates
-    MERCHANTS ||--o{ PAYMENTS : processes
-    MERCHANTS ||--o{ REFUNDS : issues
-    MERCHANTS ||--o{ WEBHOOK_LOGS : receives
-    MERCHANTS ||--o{ IDEMPOTENCY_KEYS : uses
-    ORDERS ||--|| PAYMENTS : has
-    PAYMENTS ||--o{ REFUNDS : has
-    
-    MERCHANTS {
-        uuid id PK
-        string email UK
-        string business_name
-        string api_key UK
-        string api_secret
-        string webhook_url
-        string webhook_secret
-        timestamp created_at
-    }
-    
-    ORDERS {
-        string id PK
-        uuid merchant_id FK
-        integer amount
-        string currency
-        string receipt
-        string status
-        timestamp created_at
-    }
-    
-    PAYMENTS {
-        string id PK
-        string order_id FK
-        uuid merchant_id FK
-        integer amount
-        string currency
-        string method
-        string status
-        boolean captured
-        string error_code
-        timestamp created_at
-    }
-    
-    REFUNDS {
-        string id PK
-        string payment_id FK
-        uuid merchant_id FK
-        integer amount
-        string reason
-        string status
-        timestamp created_at
-        timestamp processed_at
-    }
-    
-    WEBHOOK_LOGS {
-        uuid id PK
-        uuid merchant_id FK
-        string event
-        jsonb payload
-        string status
-        integer attempts
-        timestamp next_retry_at
-        integer response_code
-        timestamp created_at
-    }
-    
-    IDEMPOTENCY_KEYS {
-        string key PK
-        uuid merchant_id PK
-        jsonb response
-        timestamp created_at
-        timestamp expires_at
-    }
+## Data Architecture
 ```
 
-## Component Responsibilities
+erDiagram
+    MERCHANTS ||--o{ ORDERS : creates
+    ORDERS ||--|| PAYMENTS : contains
+    PAYMENTS ||--o{ REFUNDS : generates
+    MERCHANTS ||--o{ WEBHOOK_LOGS : receives
+    MERCHANTS ||--o{ IDEMPOTENCY_KEYS : uses
 
-### API Server
-- Handle HTTP requests
-- Authenticate merchants
-- Validate input data
-- Enqueue background jobs
-- Return immediate responses
+    MERCHANTS {
+        uuid id
+        string api_key
+        string api_secret
+        string webhook_url
+    }
+
+    PAYMENTS {
+        string id
+        string status
+        string method
+        int amount
+    }
+
+    WEBHOOK_LOGS {
+        uuid id
+        string event
+        int attempts
+        string status
+    }
+```
+## 🧠 Component Responsibilities
+## API Server
+
+Authentication
+
+Input validation
+
+Order & payment creation
+
+Job enqueueing
+
+Status APIs
 
 ### Worker Service
-- Process payment jobs
-- Deliver webhooks with retries
-- Process refunds
-- Update database records
-- Handle job failures
 
-### Redis Queue
-- Store pending jobs
-- Enable async processing
-- Provide job retry mechanism
-- Track job status
+Payment processing
 
-### PostgreSQL
-- Persist all data
-- Maintain data integrity
-- Support transactions
-- Enable complex queries
+Refund processing
 
-## Security Considerations
+Webhook delivery
 
-### API Authentication
-- API key + secret validation
-- Scoped to merchant account
-- No public endpoints (except test)
+Retry handling
 
-### Webhook Security
-- HMAC-SHA256 signatures
-- Prevents tampering
-- Verifiable by merchant
-- Unique secret per merchant
+ ## Redis
 
-### Idempotency
-- Prevents duplicate charges
-- 24-hour key expiration
-- Scoped to merchant
-- Cached responses
+Job queue storage
 
-## Scalability Patterns
+Retry scheduling
 
-### Horizontal Scaling
-- Multiple API instances behind load balancer
-- Multiple worker instances processing jobs
-- Redis cluster for high throughput
-- PostgreSQL read replicas
+Worker coordination
 
-### Job Queue Benefits
-- Decouples processing from API
-- Handles traffic spikes
-- Automatic retries
-- Failure isolation
+## PostgreSQL
 
-### Database Optimization
-- Indexed foreign keys
-- Partial indexes on status
-- Connection pooling
-- Query optimization
+Persistent storage
 
-## Monitoring & Observability
+Audit logs
 
-### Key Metrics
-- Payment success rate
-- Webhook delivery rate
-- Job processing time
-- Queue depth
-- API response time
+Payment lifecycle tracking
 
-### Logging
-- Structured JSON logs
-- Request/response logging
-- Job execution logs
-- Error tracking
+## Checkout SDK
 
-### Health Checks
-- API health endpoint
-- Database connectivity
-- Redis connectivity
-- Worker status
+Modal handling
 
-## Deployment Strategy
+Iframe communication
 
-### Docker Compose (Development)
-- Single-host deployment
-- Easy local testing
-- Quick iteration
+Success / failure callbacks
 
-### Kubernetes (Production)
-- Multi-host deployment
-- Auto-scaling
-- Rolling updates
-- High availability
+⚙️ Why This Architecture Works
 
-### CI/CD Pipeline
-1. Run tests
-2. Build Docker images
-3. Push to registry
-4. Deploy to staging
-5. Run integration tests
-6. Deploy to production
+✔ API remains fast and responsive
+✔ Long tasks handled asynchronously
+✔ Failures are retried safely
+✔ Services can scale independently
+✔ Matches real payment gateway systems
 
-## Future Enhancements
+🎯 Summary
 
-- [ ] Payment method plugins
-- [ ] Multi-currency support
-- [ ] Fraud detection
-- [ ] Analytics dashboard
-- [ ] Rate limiting
-- [ ] API versioning
-- [ ] Webhook replay
-- [ ] Subscription billing
+This architecture is designed to handle real-world payment workloads, not demo traffic.
+It emphasizes reliability, scalability, and security, making it suitable for production-style environments.
+
+
+
+
+
+
+
+
+
+
