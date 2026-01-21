@@ -282,13 +282,12 @@ document.getElementById('pay-button').addEventListener('click', function() {
 Configure Webhook URL
 Option 1: Via Dashboard
 ```
-
-
 Go to http://localhost:3000/webhooks
+Enter your webhook URL
+Copy the webhook secret
+Click "Save Configuration"
 ```
->Enter your webhook URL
->Copy the webhook secret
->Click "Save Configuration"
+
 
 
 ## Option 2: Via Database
@@ -433,7 +432,7 @@ environment:
   TEST_PAYMENT_SUCCESS: "true"           # Force payment success
   WEBHOOK_RETRY_INTERVALS_TEST: "true"   # Fast webhook retries (5–20 seconds)
 ```
-## 📝 License
+## License
 
 This project is released under the **MIT License**.
 
@@ -441,21 +440,17 @@ This project is released under the **MIT License**.
 
 ## 👤 Author
 
-**Shahanth**  
+**vinay-nethala**  
 GitHub: https://github.com/vinay-nethala
 
 ---
 
-## 🎯 Repository
+## Repository
 
 Source Code:  
 https://github.com/https://github.com/vinay-nethala/Payment-Gateway-with-Async-Processing-and-Webhooks
 
----
 
-Built with ❤️ using **Node.js, Express, Bull, PostgreSQL, Redis, and React**
-
-**Industrial-Grade Payment Gateway** • **Production-Ready** • **Scalable** • **Secure**
 
 
 
