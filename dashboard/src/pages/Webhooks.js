@@ -123,6 +123,7 @@ function Webhooks() {
         }
     };
 
+<<<<<<< HEAD
     const handleCopySecret = async () => {
         try {
             await navigator.clipboard.writeText(webhookSecret);
@@ -135,6 +136,8 @@ function Webhooks() {
         }
     };
 
+=======
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
     const handleRetryWebhook = async (webhookId) => {
         try {
             setLoading(true);
@@ -170,18 +173,45 @@ function Webhooks() {
     };
 
     return (
+<<<<<<< HEAD
         <div data-test-id="webhook-config" className="container page webhook-config">
             <h2>Webhook Configuration</h2>
 
             {message && (
                 <div className={`message ${message.includes('✅') ? 'success' : 'error'}`}>
+=======
+        <div data-test-id="webhook-config" style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+            <h2>Webhook Configuration</h2>
+
+            {message && (
+                <div style={{
+                    padding: '12px',
+                    marginBottom: '20px',
+                    borderRadius: '4px',
+                    background: message.includes('✅') ? '#d4edda' : '#f8d7da',
+                    color: message.includes('✅') ? '#155724' : '#721c24',
+                    border: `1px solid ${message.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`
+                }}>
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
                     {message}
                 </div>
             )}
 
+<<<<<<< HEAD
             <form data-test-id="webhook-config-form" onSubmit={(e) => { e.preventDefault(); handleSaveConfiguration(); }} className="form-card">
                 <div style={{ marginBottom: '20px' }}>
                     <label>
+=======
+            <form data-test-id="webhook-config-form" onSubmit={(e) => { e.preventDefault(); handleSaveConfiguration(); }} style={{
+                background: 'white',
+                padding: '24px',
+                borderRadius: '8px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                marginBottom: '30px'
+            }}>
+                <div style={{ marginBottom: '20px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
                         Webhook URL
                     </label>
                     <input
@@ -190,10 +220,21 @@ function Webhooks() {
                         value={webhookUrl}
                         onChange={(e) => setWebhookUrl(e.target.value)}
                         placeholder="https://yoursite.com/webhook"
+<<<<<<< HEAD
+=======
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            fontSize: '14px'
+                        }}
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
                     />
                 </div>
 
                 <div style={{ marginBottom: '20px' }}>
+<<<<<<< HEAD
                     <label>
                         Webhook Secret
                     </label>
@@ -207,12 +248,44 @@ function Webhooks() {
                         >
                             Copy
                         </button>
+=======
+                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                        Webhook Secret
+                    </label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <span
+                            data-test-id="webhook-secret"
+                            style={{
+                                flex: 1,
+                                padding: '10px',
+                                background: '#f5f5f5',
+                                border: '1px solid #ddd',
+                                borderRadius: '4px',
+                                fontFamily: 'monospace',
+                                fontSize: '14px'
+                            }}
+                        >
+                            {webhookSecret}
+                        </span>
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
                         <button
                             data-test-id="regenerate-secret-button"
                             type="button"
                             onClick={handleRegenerateSecret}
                             disabled={loading}
+<<<<<<< HEAD
                             className="btn btn-ghost btn-sm"
+=======
+                            style={{
+                                padding: '10px 20px',
+                                background: '#6c757d',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                                fontSize: '14px'
+                            }}
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
                         >
                             Regenerate
                         </button>
@@ -224,7 +297,20 @@ function Webhooks() {
                         data-test-id="save-webhook-button"
                         type="submit"
                         disabled={loading}
+<<<<<<< HEAD
                         className="btn btn-primary"
+=======
+                        style={{
+                            padding: '12px 24px',
+                            background: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                        }}
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
                     >
                         {loading ? 'Saving...' : 'Save Configuration'}
                     </button>
@@ -234,7 +320,20 @@ function Webhooks() {
                         type="button"
                         onClick={handleSendTestWebhook}
                         disabled={loading}
+<<<<<<< HEAD
                         className="btn btn-success"
+=======
+                        style={{
+                            padding: '12px 24px',
+                            background: '#28a745',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                        }}
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
                     >
                         {loading ? 'Sending...' : 'Send Test Webhook'}
                     </button>
@@ -242,8 +341,13 @@ function Webhooks() {
             </form>
 
             <h3>Webhook Logs</h3>
+<<<<<<< HEAD
             <div className="logs-card">
                 <table data-test-id="webhook-logs-table">
+=======
+            <div style={{ background: 'white', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+                <table data-test-id="webhook-logs-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+>>>>>>> 4924fc924207e806601e7ab3429d2d867083ac5b
                     <thead>
                         <tr style={{ background: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
                             <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Event</th>
