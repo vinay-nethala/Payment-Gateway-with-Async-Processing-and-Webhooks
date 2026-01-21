@@ -127,45 +127,45 @@ erDiagram
 ## 🧠 Component Responsibilities
 ## API Server
 
-Authentication
+1.Authentication
 
-Input validation
+2 Input validation
 
-Order & payment creation
+3 Order & payment creation
 
-Job enqueueing
+4 Job enqueueing
 
-Status APIs
+5 Status APIs
 
 ### Worker Service
 
-Payment processing
+1 Payment processing
 
-Refund processing
+2 Refund processing
 
-Webhook delivery
+3 Webhook delivery
 
-Retry handling
+4 Retry handling
 
  ## Redis
 
-Job queue storage
+1 Job queue storage
 
-Retry scheduling
+2 Retry scheduling
 
-Worker coordination
+3 Worker coordination
 
 ## PostgreSQL
 
-Persistent storage
+1 Persistent storage
 
-Audit logs
+2 Audit logs
 
-Payment lifecycle tracking
+3 Payment lifecycle tracking
 
 ## Checkout SDK
 
-Modal handling
+3 Modal handling
 
 Iframe communication
 
@@ -174,10 +174,18 @@ Success / failure callbacks
 ⚙️ Why This Architecture Works
 
 ✔ API remains fast and responsive
+
+
 ✔ Long tasks handled asynchronously
+
+
 ✔ Failures are retried safely
+
+
 ✔ Services can scale independently
-✔ Matches real payment gateway systems
+
+
+✔ Matches real payment gateway systms
 
 🎯 Summary
 
