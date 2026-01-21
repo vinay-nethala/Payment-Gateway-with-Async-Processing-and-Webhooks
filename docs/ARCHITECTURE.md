@@ -41,7 +41,7 @@ graph TD
     WORKER -->|Send Events| WH
 ```
 ## 🔄 Payment Processing Flow
-```
+```mermaid
 
 sequenceDiagram
     participant Merchant
@@ -71,7 +71,7 @@ sequenceDiagram
     Worker->>Webhook: Send webhook event
 ```
 ## Webhook Delivery Architecture
-```
+```mermaid
  stateDiagram-v2
     [*] --> Pending
     Pending --> Attempt1
@@ -94,7 +94,7 @@ sequenceDiagram
     Failed --> [*]
 ```
 ## Data Architecture
-```
+```mermaid
 
 erDiagram
     MERCHANTS ||--o{ ORDERS : creates
